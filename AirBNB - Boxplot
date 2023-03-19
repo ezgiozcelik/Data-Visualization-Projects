@@ -1,0 +1,42 @@
+## Setting the working directory
+setwd("~/Desktop/archive")
+
+## Loading and Installing Libraries
+install.packages(c("stringr", "tidyverse", "plyr", "dplyr", "tidyr","naniar", "ggplot2"))
+
+library(stringr) 
+library(tidyverse)
+library(dplyr)
+library(plyr)
+library(tidyr)  
+library(naniar)
+library(ggplot2)
+
+#Download the dataset for Amsterdam AirBNB Market on Weekends
+amsend <- read.csv("amsterdam_weekends.csv")
+
+#Rename the values for a couple binary variables
+amsend$host_is_superhost[amsend$host_is_superhost == "True"] <-"Superhost"
+amsend$host_is_superhost[amsend$host_is_superhost == "False"] <-"Not a Superhost"
+amsend$room_private[amsend$room_private == "True"] <-"Private"
+amsend$room_private[amsend$room_private == "False"] <-"Not"
+
+#Delete the outlier
+amsend <- amsend[-860,]
+
+#Create a boxplot, demonstrating price differences for rooms with varying privacy
+amsend %>%
+  ggplot(aes(room_type, realSum, colour=room_type,
+             na.rm = T))+
+  scale_color_manual(values = c("#00AFBB", "#E7B800", "#FC4E07"))+
+    geom_boxplot()+
+    labs(title="Effects of Privacy on AirBNB Listing Price \n(for weekends in Amsterdam)", 
+         x="Room Privacy", 
+         y="Total Price of the Listing",
+         colour="Type of Room")+
+    theme(axis.text.x = element_text(face="plain", size=10, angle=0),
+          axis.text.y = element_text(face="plain", size=12, angle=45))+
+  theme( axis.line = element_line(colour = "darkblue", 
+                                  size = 1, linetype = "solid"))
+    theme_bw()
+    
